@@ -1,0 +1,63 @@
+/* DESCRIPTION
+* L[i] is the amount of luck associated with a contest. If Lena wins the contest, her luck balance 
+will decrease by ; if she loses it, her luck balance will increase by L[i].
+* T[i] denotes the contest's importance rating. It's equal to 1 if the contest is important, and 
+it's equal to 0 if it's unimportant.
+If Lena loses no more than k important contests, what is the maximum amount of luck she can have 
+after competing in all the preliminary contests? This value may be negative.
+
+Print a single integer denoting the maximum amount of luck Lena can have after all the contests.
+*/
+
+static int luckBalance(int k, int[][] contests) {
+        int [] notOnes = new int[100]; // array filled with unimportant luck values
+        int[] ones = new int[100]; // array filled with important luck values
+
+        // Fill up the ones and notOnes arrays
+        for(int i = 0; i < contests.length; i++){
+            if(contests[i][1] == 1)
+                ones[i] = contests[i][0];
+            else
+                notOnes[i] = contests[i][0];
+            }
+            
+        // Sorts the ones array from least to greatest using insertion sort
+        for(int i = 1; i < ones.length; i++) {
+            int newElement = ones[i];
+            int location = i-1;
+        
+            while(location >=0 && ones[location] > newElement) { 
+                ones[location+1] = ones[location]; 
+                location--;
+            }
+            ones[location+1] = newElement;
+        }
+        
+        // Variable for the luck balance
+        int balance = 0;
+        
+        // If there are as many important matches to lose as there are to lose or more important matches
+        // to lose as there are important matches, just add all the luck values together to the balance
+        if(k >= ones.length){
+            for(int x : ones)
+                balance += x;
+            
+            for(int y : notOnes)
+                balance += y;
+            return balance;
+        }
+        
+        // If not, first add all the values in the notOnes array as you will be adding those values anyways
+        for(int a : notOnes)
+            balance += a;
+
+        // Find the amount of matches you have to win, and subtract that amount of matches and their respective
+        // luck values, which will be the smallest values and add the rest
+        int diff = ones.length - k;
+        for(int i = 0; i < diff; i++)
+            balance -= ones[i];
+        for(int j = diff; j < ones.length; j++)
+            balance += ones[j];
+        return balance;
+        
+    }
